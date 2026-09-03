@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>net10.0</TargetFramework>
+	<Nullable>enable</Nullable>
+	<ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<ProjectReference Include="..\ECommerce.Models\ECommerce.Models.csproj" />
+	<ProjectReference Include="..\ECommerce.Data\ECommerce.Data.csproj" />
+  </ItemGroup>
+
+</Project>
