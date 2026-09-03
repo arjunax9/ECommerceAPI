@@ -45,9 +45,3 @@ Add a Dockerfile to the API project root to containerize the application. Exampl
 
 ## Contributing
 - Fork the repo, open a feature branch, and create a pull request. Keep changes focused and add tests when possible.
-
-## License
-Specify your license here (e.g., MIT). If you don't want to choose a license yet, add one later in a LICENSE file.
-
----
-Edit this README to reflect project-specific details (project paths, sample requests, DB setup, third-party services).
