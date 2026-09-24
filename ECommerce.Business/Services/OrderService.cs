@@ -86,6 +86,11 @@ public class OrderService : IOrderService
         return await _orderRepository.GetByIdAsync(id);
     }
 
+    public async Task<List<Order>> GetByUserIdAsync(int userId)
+    {
+        return await _orderRepository.GetByUserIdAsync(userId);
+    }
+
     public async Task CheckoutAsync(int id)
     {
         var order = await _orderRepository.GetByIdAsync(id);
@@ -116,5 +121,25 @@ public class OrderService : IOrderService
         }
 
         return success;
+    }
+
+    public async Task<List<Order>> GetAllAsync()
+    {
+        return await _orderRepository.GetAllAsync();
+    }
+
+    public async Task<Order> ApproveOrderAsync(int id)
+    {
+        var order = await _orderRepository.GetByIdAsync(id);
+        if (order == null) throw new InvalidOperationException("Order not found");
+
+        order.Status = "Paid";
+        await _orderRepository.UpdateAsync(order);
+        if (_notificationService != null)
+        {
+            await _notificationService.NotifyOrderUpdatedAsync(order.Id, order.Status);
+        }
+
+        return order;
     }
 }

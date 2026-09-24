@@ -85,6 +85,16 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 builder.Services.AddMemoryCache();
 builder.Services.AddSignalR();
+// Allow Angular development server to access API
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 // Register background service (hosted) before building the app
 builder.Services.AddHostedService<ECommerceAPI.Services.OrderBackgroundService>();
 
@@ -95,7 +105,19 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+// No development fallback middleware here. Rely on the configured CORS policy and proper middleware ordering.
+
+// Only use HTTPS redirection when not in development to avoid interfering with HTTP dev servers
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+// Ensure routing is enabled so CORS middleware can run for endpoint routing
+app.UseRouting();
+
+// Enable CORS for Angular dev server
+app.UseCors("AllowAngular");
 
 app.UseAuthentication();
 app.UseAuthorization();

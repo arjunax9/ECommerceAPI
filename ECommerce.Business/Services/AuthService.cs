@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Claims;
 using System.Text;
 using ECommerce.Business.Interfaces;
 using ECommerce.Data.Repositories;
@@ -20,7 +19,8 @@ public class AuthService : IAuthService
         _userRepository = userRepository;
         _configuration = configuration;
     }
-
+     
+     
     public async Task<User> RegisterAsync(User user)
     {
         // Simple register: ensure email is unique

@@ -1,6 +1,30 @@
 @ECommerceAPI_HostAddress = http://localhost:5067
 
-GET {{ECommerceAPI_HostAddress}}/weatherforecast/
+### Get Products List
+GET {{ECommerceAPI_HostAddress}}/api/products
 Accept: application/json
+
+###
+
+### Get Product By ID
+GET {{ECommerceAPI_HostAddress}}/api/products/1
+Accept: application/json
+
+###
+
+### Get All Orders
+GET {{ECommerceAPI_HostAddress}}/api/orders
+Accept: application/json
+
+###
+
+### Login Admin
+POST {{ECommerceAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@local",
+  "password": "Admin123!"
+}
 
 ###

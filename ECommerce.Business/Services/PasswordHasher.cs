@@ -13,12 +13,8 @@ public static class PasswordHasher
     // Stored format: {iterations}.{saltBase64}.{hashBase64}
     public static string Hash(string password)
     {
-        using var rng = RandomNumberGenerator.Create();
-        var salt = new byte[SaltSize];
-        rng.GetBytes(salt);
-
-        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256);
-        var key = pbkdf2.GetBytes(KeySize);
+        var salt = RandomNumberGenerator.GetBytes(SaltSize);
+        var key = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashAlgorithmName.SHA256, KeySize);
 
         return string.Join('.', Iterations, Convert.ToBase64String(salt), Convert.ToBase64String(key));
     }
@@ -38,8 +34,7 @@ public static class PasswordHasher
         var salt = Convert.FromBase64String(parts[1]);
         var key = Convert.FromBase64String(parts[2]);
 
-        using var pbkdf2 = new Rfc2898DeriveBytes(providedPassword, salt, iterations, HashAlgorithmName.SHA256);
-        var keyToCheck = pbkdf2.GetBytes(key.Length);
+        var keyToCheck = Rfc2898DeriveBytes.Pbkdf2(providedPassword, salt, iterations, HashAlgorithmName.SHA256, key.Length);
 
         return CryptographicOperations.FixedTimeEquals(keyToCheck, key);
     }

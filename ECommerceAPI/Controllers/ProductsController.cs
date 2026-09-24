@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System.Text;
 using System.IO;
 using ECommerce.Models.Entities;
+using ECommerce.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerceAPI.Controllers;
@@ -28,7 +29,23 @@ public class ProductsController : ControllerBase
     {
         var products = await _service.GetAllAsync();
 
-        return Ok(products);
+        // Include inventory quantity for each product in the response
+        var results = new List<object>(products.Count);
+        foreach (var p in products)
+        {
+            var qty = await _inventoryService.GetQuantityAsync(p.Id);
+            results.Add(new
+            {
+                p.Id,
+                p.Name,
+                p.Description,
+                p.Price,
+                p.Category,
+                Quantity = qty
+            });
+        }
+
+        return Ok(results);
     }
 
     [HttpGet("{id}")]
@@ -40,19 +57,53 @@ public class ProductsController : ControllerBase
         if (product == null)
             return NotFound();
 
-        return Ok(product);
+        // Include inventory quantity in the single-product response
+        var qty = await _inventoryService.GetQuantityAsync(product.Id);
+
+        return Ok(new
+        {
+            product.Id,
+            product.Name,
+            product.Description,
+            product.Price,
+            product.Category,
+            Quantity = qty
+        });
     }
 
     [HttpPost]
     [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create(Product product)
+    public async Task<IActionResult> Create(ProductRequest request)
     {
-        // Ensure we don't try to insert an explicit Id for an identity column
-        product.Id = 0;
+        // Map request to entity and create
+        var product = new Product
+        {
+            Id = 0,
+            Name = request.Name ?? string.Empty,
+            Description = request.Description ?? string.Empty,
+            Price = request.Price,
+            Category = request.Category ?? string.Empty
+        };
 
         var created = await _service.AddAsync(product);
 
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        // If quantity provided, set inventory
+        if (request.Quantity.HasValue)
+        {
+            await _inventoryService.UpdateQuantityAsync(created.Id, request.Quantity.Value);
+        }
+
+        var qty = request.Quantity ?? await _inventoryService.GetQuantityAsync(created.Id);
+
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, new
+        {
+            created.Id,
+            created.Name,
+            created.Description,
+            created.Price,
+            created.Category,
+            Quantity = qty
+        });
     }
 
     /// <summary>
@@ -118,7 +169,7 @@ public class ProductsController : ControllerBase
                     if (!string.IsNullOrWhiteSpace(h) && !map.ContainsKey(h)) map[h.Trim()] = c;
                 }
 
-                int lastRow = worksheet.LastRowUsed().RowNumber();
+                int lastRow = worksheet.LastRowUsed()?.RowNumber() ?? 0;
                 for (int r = 2; r <= lastRow; r++)
                 {
                     var row = worksheet.Row(r);
@@ -153,13 +204,35 @@ public class ProductsController : ControllerBase
 
     [HttpPut("{id}")]
     [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(int id, Product product)
+    public async Task<IActionResult> Update(int id, ProductRequest request)
     {
-        product.Id = id;
+        var product = new Product
+        {
+            Id = id,
+            Name = request.Name ?? string.Empty,
+            Description = request.Description ?? string.Empty,
+            Price = request.Price,
+            Category = request.Category ?? string.Empty
+        };
 
         await _service.UpdateAsync(product);
 
-        return Ok(product);
+        if (request.Quantity.HasValue)
+        {
+            await _inventoryService.UpdateQuantityAsync(id, request.Quantity.Value);
+        }
+
+        var qty = await _inventoryService.GetQuantityAsync(id);
+
+        return Ok(new
+        {
+            product.Id,
+            product.Name,
+            product.Description,
+            product.Price,
+            product.Category,
+            Quantity = qty
+        });
     }
 
     [HttpDelete("{id}")]

@@ -32,4 +32,20 @@ public class OrderRepository : IOrderRepository
         _context.Orders.Update(order);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<List<Order>> GetByUserIdAsync(int userId)
+    {
+        return await _context.Orders
+            .Include(o => o.OrderItems)
+            .Where(o => o.UserId == userId)
+            .ToListAsync();
+    }
+
+    public async Task<List<Order>> GetAllAsync()
+    {
+        return await _context.Orders
+            .Include(o => o.OrderItems)
+            .OrderByDescending(o => o.Id)
+            .ToListAsync();
+    }
 }

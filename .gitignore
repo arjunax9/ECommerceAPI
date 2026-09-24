@@ -361,3 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Frontend ignores
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.vscode/
+*.Backup.tmp
