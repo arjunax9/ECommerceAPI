@@ -1,0 +1,15 @@
+<div class="products">
+  <h2>Products</h2>
+  <div *ngIf="loading">Loading...</div>
+  <div *ngIf="error">{{error}}</div>
+  <div class="grid">
+    <div class="card" *ngFor="let p of products">
+      <h3>{{p.name}}</h3>
+      <p>{{p.description}}</p>
+      <p>Price: {{p.price | currency}}</p>
+      <p>Category: {{p.category}}</p>
+      <a [routerLink]="['/products', p.id]">Details</a>
+      <button (click)="addToCart(p)">Add to cart</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+  <h2 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">My Orders</h2>
+
+  <div *ngIf="loading" style="padding: 15px; color: #4a5568;">Loading orders...</div>
+  <div *ngIf="error" style="padding: 15px; color: #e53e3e; background: #fff5f5; border-radius: 6px; margin-bottom: 15px;">{{error}}</div>
+
+  <div *ngIf="actionMessage" style="padding: 12px 16px; background-color: #def7ec; color: #03543f; border: 1px solid #bcf0da; border-radius: 6px; margin-bottom: 15px; font-weight: 500;">
+    ✓ {{ actionMessage }}
+  </div>
+
+  <div *ngIf="orders.length === 0 && !loading" style="padding: 20px; text-align: center; color: #718096; background: #f7fafc; border-radius: 8px;">
+    No orders found.
+  </div>
+
+  <div *ngFor="let o of orders" style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin-bottom: 16px; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h3 style="margin: 0; font-size: 1.25rem;">Order #{{o.id}}</h3>
+      <span [style.backgroundColor]="o.status === 'Paid' ? '#d1fae5' : (o.status === 'Pending' ? '#fef3c7' : '#e0f2fe')"
+            [style.color]="o.status === 'Paid' ? '#065f46' : (o.status === 'Pending' ? '#92400e' : '#0369a1')"
+            style="padding: 4px 12px; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+        {{o.status}}
+      </span>
+    </div>
+
+    <p style="font-size: 1.1rem; font-weight: 600; margin: 8px 0; color: #2d3748;">
+      Total: {{o.totalAmount | currency}}
+    </p>
+
+    <div style="background: #f8fafc; padding: 10px 14px; border-radius: 6px; margin: 12px 0;">
+      <div style="font-weight: 600; font-size: 0.85rem; color: #64748b; margin-bottom: 6px; text-transform: uppercase;">Items</div>
+      <div *ngFor="let it of o.orderItems" style="font-size: 0.95rem; color: #334155; padding: 3px 0;">
+        Product #{{it.productId}} &times; {{it.quantity}} @ {{it.price | currency}}
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: center; margin-top: 14px;">
+      <button *ngIf="o.status === 'Pending'"
+              (click)="approveOrder(o)"
+              [disabled]="approvingId === o.id"
+              style="background-color: #10b981; color: white; border: none; padding: 8px 18px; border-radius: 6px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s;"
+              onmouseover="this.style.backgroundColor='#059669'"
+              onmouseout="this.style.backgroundColor='#10b981'">
+        {{ approvingId === o.id ? 'Approving...' : '✓ Approve & Pay Order' }}
+      </button>
+
+      <a [routerLink]="['/orders', o.id]"
+         style="color: #4f46e5; text-decoration: none; font-weight: 500; font-size: 0.95rem; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff;"
+         onmouseover="this.style.backgroundColor='#f1f5f9'"
+         onmouseout="this.style.backgroundColor='#fff'">
+        View Details →
+      </a>
+    </div>
+  </div>
+</div>

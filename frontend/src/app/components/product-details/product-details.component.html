@@ -1,0 +1,8 @@
+<div *ngIf="loading">Loading...</div>
+<div *ngIf="error">{{error}}</div>
+<div *ngIf="product">
+  <h2>{{product.name}}</h2>
+  <p>{{product.description}}</p>
+  <p>Price: {{product.price | currency}}</p>
+  <p>Quantity: {{product.quantity}}</p>
+</div>

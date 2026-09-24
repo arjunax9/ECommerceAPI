@@ -1,0 +1,26 @@
+<div>
+  <h2>Checkout</h2>
+  <div *ngIf="items.length===0">Cart is empty</div>
+  <div *ngIf="items.length>0">
+    <div *ngFor="let it of items">
+      <h4>{{it.product.name}}</h4>
+      <p>Qty: {{it.quantity}}</p>
+      <p>Price: {{it.product.price | currency}}</p>
+    </div>
+
+    <div>Total: {{total | currency}}</div>
+
+    <div>
+      <label>
+        <input type="radio" name="pm" value="card" [(ngModel)]="paymentMethod" /> Card
+      </label>
+      <label>
+        <input type="radio" name="pm" value="paypal" [(ngModel)]="paymentMethod" /> PayPal
+      </label>
+    </div>
+
+    <button (click)="place()">Place Order</button>
+  </div>
+
+  <div *ngIf="message">{{message}}</div>
+</div>

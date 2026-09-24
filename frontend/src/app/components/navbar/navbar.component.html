@@ -1,0 +1,11 @@
+<nav class="nav">
+  <a routerLink="/">Home</a>
+  <a routerLink="/products">Products</a>
+  <a routerLink="/cart">Cart</a>
+  <a *ngIf="auth.isLoggedIn()" routerLink="/orders">My Orders</a>
+  <a *ngIf="auth.isAdmin()" routerLink="/admin">Admin</a>
+  <span class="spacer"></span>
+  <a *ngIf="!auth.isLoggedIn()" routerLink="/login">Login</a>
+  <a *ngIf="!auth.isLoggedIn()" routerLink="/register">Register</a>
+  <a *ngIf="auth.isLoggedIn()" (click)="auth.logout()">Logout</a>
+</nav>

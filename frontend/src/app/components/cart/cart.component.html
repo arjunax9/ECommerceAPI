@@ -1,0 +1,19 @@
+<div>
+  <h2>Your Cart</h2>
+  <div *ngIf="items.length===0">Cart is empty</div>
+  <div *ngFor="let it of items; let i = index">
+    <h4>{{it.product.name}}</h4>
+  <p>
+    Qty: <button (click)="decrease(i)">-</button>
+    {{it.quantity}}
+    <button (click)="increase(i)">+</button>
+  </p>
+  <p>Price: {{it.product.price | currency}} each</p>
+  <p>Line: {{(it.product.price * it.quantity) | currency}}</p>
+  <button (click)="remove(i)">Remove</button>
+  </div>
+  <div *ngIf="items.length>0">
+  <div>Total: {{total | currency}}</div>
+  <button (click)="checkout()">Checkout</button>
+  </div>
+</div>

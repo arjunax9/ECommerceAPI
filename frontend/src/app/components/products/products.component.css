@@ -1,0 +1,2 @@
+.grid{display:flex;flex-wrap:wrap;gap:12px}
+.card{border:1px solid #ddd;padding:12px;width:220px}
